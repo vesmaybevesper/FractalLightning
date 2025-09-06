@@ -281,26 +281,6 @@ public abstract class LightningRenderer {
 		float width
 	);
 
-	public static double square(double number) {
-		return number * number;
-	}
-
-	public static double cosCurve(double number) {
-		number *= number;
-		return (1.0D - 16.0D * number) * (1.0D - (16.0D - 4.0D * Math.PI) * number);
-	}
-
-	//wavelength of 1, not tau.
-	public static double fastSin01(double angle) {
-		angle -= Math.floor(angle);
-		return angle <= 0.5D ? cosCurve(angle - 0.25D) : -cosCurve(angle - 0.75D);
-	}
-
-	//wavelength of 1, not tau.
-	public static double fastCos01(double angle) {
-		return fastSin01(angle + 0.25D);
-	}
-
 	public void addColoredQuads(
 		float transformedStartX,
 		float transformedStartY,

@@ -1,0 +1,3 @@
+Minecraft's default lightning renderer is kind of boring and doesn't even look like lightning in my opinion. So I made it look better.
+
+This mod's lightning renderer generates fractal-like geometry for lightning (hence the name), and dynamically adjusts the amount of geometry generated based on the player's distance to the lightning bolt. This allows lightning to be more detailed only where necessary.

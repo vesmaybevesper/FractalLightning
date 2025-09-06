@@ -8,13 +8,14 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.state.LightningEntityRenderState;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.util.Identifier;
 
 #if MC_VERSION >= MC_1_21_2
+
+import net.minecraft.client.render.entity.state.LightningEntityRenderState;
 
 @Environment(EnvType.CLIENT)
 public class FractalLightningEntityRenderer extends EntityRenderer<LightningEntity, LightningEntityRenderState> {

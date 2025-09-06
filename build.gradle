@@ -22,6 +22,14 @@ sourceSets() {
 			srcDirs = [ file("src/common/resources"), file("src/${project.minecraft_version}/resources") ]
 		}
 	}
+	test() {
+		java() {
+			srcDirs = [ file("src/test/java") ]
+		}
+		resources() {
+			srcDirs = [ file("src/test/resources") ]
+		}
+	}
 }
 
 repositories() {

@@ -12,7 +12,9 @@
 	"icon": "assets/fractallightning/icon.png",
 	"environment": "client",
 	"entrypoints": {
-		"client": [ "builderb0y.fractallightning.FractallightningClient" ]
+		"main": [ "builderb0y.fractallightning.FractalLightning" ],
+		"client": [ "builderb0y.fractallightning.FractallightningClient" ],
+		"modmenu": [ "builderb0y.fractallightning.config.ModMenuCompat" ]
 	},
 	"mixins": [
 		"fractallightning.mixins.json"

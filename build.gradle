@@ -1,3 +1,7 @@
+import java.nio.file.Files
+import java.util.jar.JarEntry
+import java.util.jar.JarFile
+
 plugins() {
 	id('fabric-loom') version('1.10-SNAPSHOT')
 }
@@ -20,13 +24,52 @@ sourceSets() {
 	}
 }
 
-/*
 repositories() {
 	maven() {
 		url('https://api.modrinth.com/maven')
 	}
+	//loom does this automatically, but does it too late.
+	//we need to ensure this gets added as a repository before
+	//all the hacks below that make JIJ dependencies work.
+	maven() {
+		name = 'MavenCentralLWJGL' //loom checks for this name, so it cannot be changed.
+		url(ArtifactRepositoryContainer.MAVEN_CENTRAL_URL)
+		content() {
+			includeGroup('org.lwjgl')
+		}
+	}
 }
-*/
+
+configurations() {
+	jijModImplementation() {
+		canBeResolved = true
+	}
+	jijModRuntimeOnly() {
+		canBeResolved = true
+	}
+	jijModCompileOnly() {
+		canBeResolved = true
+	}
+}
+
+static void extractNestedJars(File dependenciesFolder, File toUnpack) {
+	try (JarFile jar = new JarFile(toUnpack)) {
+		Enumeration<JarEntry> entries = jar.entries()
+		while (entries.hasMoreElements()) {
+			JarEntry entry = entries.nextElement()
+			String name = entry.getName()
+			if (name.startsWith('META-INF/jars/') && name.endsWith('.jar')) {
+				name = name.substring('META-INF/jars'.length())
+				File unpacked = new File(dependenciesFolder, name)
+				if (unpacked.exists()) continue
+				try (FileOutputStream out = new FileOutputStream(unpacked)) {
+					jar.getInputStream(entry).transferTo(out)
+				}
+				extractNestedJars(dependenciesFolder, unpacked)
+			}
+		}
+	}
+}
 
 dependencies() {
 	minecraft("com.mojang:minecraft:${ project.minecraft_version }")
@@ -34,7 +77,29 @@ dependencies() {
 	modImplementation("net.fabricmc:fabric-loader:${ project.loader_version }")
 	//modImplementation("net.fabricmc.fabric-api:fabric-api:${ project.fabric_version }")
 
+	jijModImplementation("maven.modrinth:modmenu:${ project.modmenu_version }")
+	jijModImplementation("maven.modrinth:cloth-config:${ project.cloth_config_version }")
+
 	annotationProcessor('systems.manifold:manifold-preprocessor:2025.1.23')
+
+	File dependenciesFolder = file('dependencies')
+	dependenciesFolder.deleteDir()
+	dependenciesFolder.mkdir()
+	for (String dependencyType : [ 'implementation', 'runtimeOnly', 'compileOnly' ]) {
+		File specificDependenciesFolder = new File(dependenciesFolder, dependencyType)
+		specificDependenciesFolder.mkdir()
+		for (File from : getConfigurations().getByName("jijMod${ dependencyType.capitalize() }").getResolvedConfiguration().getResolvedArtifacts().file) {
+			String fileName = from.getName()
+			File to = new File(specificDependenciesFolder, fileName)
+			if (!to.exists()) {
+				Files.copy(from.toPath(), to.toPath())
+				extractNestedJars(specificDependenciesFolder, to)
+			}
+		}
+	}
+	modImplementation(fileTree(file('dependencies/implementation')))
+	modCompileOnly(fileTree(file('dependencies/compileOnly')))
+	modRuntimeOnly(fileTree(file('dependencies/runtimeOnly')))
 }
 
 loom() {

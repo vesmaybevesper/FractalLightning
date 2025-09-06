@@ -20,21 +20,20 @@ public abstract class LightningRenderer {
 		if (FabricLoader.getInstance().isModLoaded("iris")) {
 			try {
 				layer = (RenderLayer)(Class.forName("net.irisshaders.iris.pathways.LightningHandler").getDeclaredField("IRIS_LIGHTNING").get(null));
-				FractallightningClient.LOGGER.info("Using new iris lightning render layer.");
+				FractalLightning.LOGGER.info("Using new iris lightning render layer.");
 				break got;
 			}
 			catch (Exception ignored) {}
 			try {
 				layer = (RenderLayer)(Class.forName("net.coderbot.iris.pipeline.LightningHandler").getDeclaredField("IRIS_LIGHTNING").get(null));
-				FractallightningClient.LOGGER.info("Using old iris lightning render layer.");
+				FractalLightning.LOGGER.info("Using old iris lightning render layer.");
 				break got;
 			}
 			catch (Exception ignored) {}
-			FractallightningClient.LOGGER.warn("Could not locate Iris lightning render layer. Defaulting to vanilla.");
+			FractalLightning.LOGGER.warn("Could not locate Iris lightning render layer. Defaulting to vanilla.");
 		}
 		LIGHTNING_LAYER = layer;
 	}
-	public static final boolean PRIDE_MONTH = LocalDate.now().getMonth() == Month.JUNE;
 
 	public final Matrix4f modelViewMatrix;
 	public final Vector4f scratch;
@@ -269,7 +268,7 @@ public abstract class LightningRenderer {
 		}
 	}
 
-	public void addQuads(
+	public abstract void addQuads(
 		float transformedStartX,
 		float transformedStartY,
 		float transformedStartZ,
@@ -280,38 +279,7 @@ public abstract class LightningRenderer {
 		float endFrac,
 		float cameraDistanceSquared,
 		float width
-	) {
-		int innerArgb, outerArgb;
-		if (PRIDE_MONTH) {
-			double red   = square(fastCos01(startFrac              ) * 0.5D + 0.5D);
-			double green = square(fastCos01(startFrac - 1.0D / 3.0D) * 0.5D + 0.5D);
-			double blue  = square(fastCos01(startFrac - 2.0D / 3.0D) * 0.5D + 0.5D);
-
-			double rcpMagnitude = 1.0D / Math.sqrt(red * red + green * green + blue * blue);
-			red   = Math.sqrt(red   * rcpMagnitude);
-			green = Math.sqrt(green * rcpMagnitude);
-			blue  = Math.sqrt(blue  * rcpMagnitude);
-
-			innerArgb = ColorHelper #if MC_VERSION < MC_1_21_2 .Argb #endif .getArgb(127, Math.min((int)(red *  64.0D + 192.0D), 255), Math.min((int)(green *  64.0D + 192.0D), 255), Math.min((int)(blue *  64.0D + 192.0D), 255));
-			outerArgb = ColorHelper #if MC_VERSION < MC_1_21_2 .Argb #endif .getArgb(0,   Math.min((int)(red * 256.0D         ), 255), Math.min((int)(green * 256.0D         ), 255), Math.min((int)(blue * 256.0D         ), 255));
-		}
-		else {
-			innerArgb = 0x7FFFFFFF;
-			outerArgb = 0x00003F7F;
-		}
-		this.addColoredQuads(
-			transformedStartX,
-			transformedStartY,
-			transformedStartZ,
-			transformedEndX,
-			transformedEndY,
-			transformedEndZ,
-			cameraDistanceSquared,
-			width,
-			innerArgb,
-			outerArgb
-		);
-	}
+	);
 
 	public static double square(double number) {
 		return number * number;

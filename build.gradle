@@ -88,7 +88,7 @@ dependencies() {
 	jijModImplementation("maven.modrinth:modmenu:${ project.modmenu_version }")
 	jijModImplementation("maven.modrinth:cloth-config:${ project.cloth_config_version }")
 
-	annotationProcessor('systems.manifold:manifold-preprocessor:2025.1.23')
+	annotationProcessor('systems.manifold:manifold-preprocessor:2025.1.27')
 
 	File dependenciesFolder = file('dependencies')
 	dependenciesFolder.deleteDir()

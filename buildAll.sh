@@ -10,4 +10,5 @@ export JAVA_HOME=/home/builderb0y/java/graalvm-jdk-24+36.1/;
 ./gradlew "Switch to 1.21.3" && ./gradlew build && \
 ./gradlew "Switch to 1.21.4" && ./gradlew build && \
 ./gradlew "Switch to 1.21.5" && ./gradlew build && \
-./gradlew "Switch to 1.21.8" && ./gradlew build;
+./gradlew "Switch to 1.21.8" && ./gradlew build && \
+./gradlew "Switch to 1.21.9" && ./gradlew build;

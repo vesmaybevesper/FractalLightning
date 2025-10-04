@@ -5,11 +5,10 @@ import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LightningEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(LightningEntity.class)
 public abstract class LightningEntityMixin extends Entity {
@@ -45,12 +44,21 @@ public abstract class LightningEntityMixin extends Entity {
 	private boolean fractalLightning_modifyCondition4(int left, int right, Operation<Boolean> original) {
 		return this.age == 8;
 	}
-
-	@Definition(id = "getWorld", method = "Lnet/minecraft/entity/LightningEntity;getWorld()Lnet/minecraft/world/World;")
+#if MC_VERSION >= MC_1_21_9
+@Definition(id = "getEntityWorld", method = "Lnet/minecraft/entity/LightningEntity;getEntityWorld()Lnet/minecraft/world/World;")
+@Definition(id = "setLightningTicksLeft", method = "Lnet/minecraft/world/World;setLightningTicksLeft(I)V")
+@Expression("this.getEntityWorld().setLightningTicksLeft(@(2))")
+@ModifyExpressionValue(method = "tick", at = @At("MIXINEXTRAS:EXPRESSION"))
+private int fractalLightning_modifyConstant(int original) {
+		return 4;
+	}
+    #else
+    @Definition(id = "getWorld", method = "Lnet/minecraft/entity/LightningEntity;getWorld()Lnet/minecraft/world/World;")
 	@Definition(id = "setLightningTicksLeft", method = "Lnet/minecraft/world/World;setLightningTicksLeft(I)V")
 	@Expression("this.getWorld().setLightningTicksLeft(@(2))")
 	@ModifyExpressionValue(method = "tick", at = @At("MIXINEXTRAS:EXPRESSION"))
 	private int fractalLightning_modifyConstant(int original) {
 		return 4;
 	}
+    #endif
 }
